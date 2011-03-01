@@ -17,7 +17,7 @@ package bio {
           println("Node " + nr.nodeId)
           for (read <- nr.reads) {
             print("\t" + read.readId + " " + read.offsetFromStart + " " + read.startCoord)
-            val seq = SeqDB.getSeq(seqs,read.readId)
+            val seq = SeqDB.getSeq(seqs, read.readId)
             println("\t" + Seq)
           }
         } else if (thing.isInstanceOf[SEQ]) {
@@ -28,13 +28,16 @@ package bio {
 
     def main(args: Array[String]) {
       if (args.length > 0) {
-        val (header, things) = readGraph(Source.fromFile(args(0)))
-        
-        val dbname="temp.db4o"
+        val graphFile = args(0) + "/LastGraph"
+        val seqsFile = args(0) + "/Sequences"
+
+        val (header, things) = readGraph(Source.fromFile(graphFile))
+
+        val dbname = "temp.db4o"
         val db = SeqDB.openDB(dbname)
-        SeqDB.importFasta(db,Source.fromFile(args(1)));
+        SeqDB.importFasta(db, Source.fromFile(seqsFile));
         mappedReads(things, db);
-        db.close        
+        db.close
       }
     }
   }
