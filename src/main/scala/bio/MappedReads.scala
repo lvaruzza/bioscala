@@ -31,6 +31,9 @@ package bio {
         val graphFile = args(0) + "/LastGraph"
         val seqsFile = args(0) + "/Sequences"
 
+        println("Graph file: " + graphFile)
+        println("Seqs file: " + seqsFile)
+        
         val (header, things) = readGraph(Source.fromFile(graphFile))
 
         val dbname = "temp.db4o"
