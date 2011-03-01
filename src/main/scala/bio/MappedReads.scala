@@ -16,12 +16,16 @@ package bio {
         if (thing.isInstanceOf[NR]) {
           val nr = thing.asInstanceOf[NR]
           println("Node " + nr.nodeId)
+          println(SeqDB.getSeq(contigs, nr.nodeId))
           for (read <- nr.reads) {
             //print("\t" + read.readId + " " + read.offsetFromStart + " " + read.startCoord)
-            val seq:BioSeq = SeqDB.getSeq(seqs, read.readId)
-            if (read.offsetFromStart >= 0) {
-            	println((" " * read.offsetFromStart) + seq.text.drop(read.startCoord))
-            	//println("\t" + read.readId + " " + read.offsetFromStart + " " + read.startCoord + " " + seq.text)
+            SeqDB.getSeq(seqs, read.readId) match {
+            	case Some(seq) =>
+		            if (read.offsetFromStart >= 0) {
+		            	println((" " * read.offsetFromStart) + seq.text.drop(read.startCoord))
+		            	//println("\t" + read.readId + " " + read.offsetFromStart + " " + read.startCoord + " " + seq.text)
+		            }
+            	case _ => println("read " + read.readId + " not found")
             }
           }
         } else if (thing.isInstanceOf[SEQ]) {
@@ -30,14 +34,23 @@ package bio {
       }
     }
 
-    def openAndImport(source:String,dbname:String):ObjectContainer = {
+    def openAndImport(source:String,dbname:String,f:(BioSeq => Int)):ObjectContainer = {
     	val dbfile = new File(dbname)
         if (dbfile.exists) dbfile.delete
         val db = SeqDB.openDB(dbname)
         dbfile.deleteOnExit        
-        SeqDB.importFasta(db, Source.fromFile(source));
+        SeqDB.importFasta(db, Source.fromFile(source),f);
     	
     	db
+    }
+    
+    val NodeRe = "^NODE_(\\d+)".r
+    
+    def nodeNumExtract(name:String): Int = {
+    	name match {
+    		case NodeRe(x) => x.toInt
+    		case _ => -1
+    	}
     }
     
     def main(args: Array[String]) {
@@ -48,10 +61,11 @@ package bio {
 
         println("Graph file: " + graphFile)
         println("Seqs file: " + seqsFile)
+        println("Contigs file: " + seqsFile)
         
         val (header, things) = readGraph(Source.fromFile(graphFile))
-        val seqdb = openAndImport(seqsFile,"seqs.db4o")
-        val contigsdb = openAndImport(contigsFile,"contigs.db4o")
+        val seqdb = openAndImport(seqsFile,"seqs.db4o",_.idx)
+        val contigsdb = openAndImport(contigsFile,"contigs.db4o",x => nodeNumExtract(x.name))
         
         mappedReads(things, seqdb,contigsdb)
         seqdb.close
