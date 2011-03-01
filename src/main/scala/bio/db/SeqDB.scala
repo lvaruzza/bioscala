@@ -2,32 +2,27 @@ package bio.db
 
 import scala.io.Source
 import bio.ReadFasta.readFasta
-import com.db4o.Db4oEmbedded
+import com.db4o._
 import bio.BioSeq
 
-object DBImport {
-
+object SeqDB {
 	def openDB(dbFile:String) = {
 		val config = Db4oEmbedded.newConfiguration
 		config.common.objectClass(classOf[BioSeq]).objectField("idx").indexed(true);
 		Db4oEmbedded.openFile(config,dbFile);		
 	}
 	
-	def importFasta(in:Source,dbFile:String) {
+	def importFasta(db:ObjectContainer,in:Source) {
 		val seqs = readFasta(in);
-		val db = openDB(dbFile);
 		
 		for(seq <-seqs ) {
 			db store seq
 		}
 		
 		db.commit;
-		db.close;
 	}
 	
-	def listFasta(dbFile:String) {
-		val db = openDB(dbFile);
-		
+	def listFasta(db:ObjectContainer) {
 		val q = db.query();
 		q.constrain(classOf[BioSeq]);
 		
@@ -36,8 +31,18 @@ object DBImport {
 			println("R: " + res.next)
 		}
 	}
+	def getSeq(db:ObjectContainer,readId:Int):BioSeq = {
+		val q = db.query
+		q.constrain(classOf[BioSeq])
+		q.descend("idx").constrain(readId);
+		val res = q.execute;
+		return res.next
+	}
+	
 	def main(args:Array[String]) {
-		importFasta(Source.fromFile(args(0)),args(1))
-		listFasta(args(1))
+		val db=openDB(args(1))
+		importFasta(db,Source.fromFile(args(0)))
+		listFasta(db)
+		db.close
 	}
 }
