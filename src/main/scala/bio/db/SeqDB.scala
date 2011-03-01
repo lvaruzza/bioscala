@@ -39,10 +39,10 @@ object SeqDB {
 		return res.next
 	}
 	
-	def main(args:Array[String]) {
+	def main(args:Array[String]) {		
 		val db=openDB(args(1))
 		importFasta(db,Source.fromFile(args(0)))
-		listFasta(db)
+		println(getSeq(db,1));
 		db.close
 	}
 }
