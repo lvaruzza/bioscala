@@ -7,13 +7,38 @@ import bio.velvet.ReadGraph.readGraph
 import bio.ReadFasta.readFasta
 import bio.BioSeq
 import bio.db.SeqDB
+import java.io.PrintStream
 
 object DumpContigs {
+  def dumpContig(out:PrintStream,nr: NR, contig: BioSeq, seqs: SeqDB, colors: SeqDB) {
+	  val colorSeq = Color.de2color(contig.text)
+	  if (nr.nodeId  < 0) {
+		  out.println(" " + colorSeq.reverse)	 	  
+	  } else {
+		  out.println(" " + colorSeq)
+	  }
+	   
+	  for (read <- nr.reads.sortBy(_.offsetFromStart)) {
+		  seqs.find(read.readId) match {
+		  	case Some(idxseq) => {
+		  		val seqName = idxseq.seq.name.split(Array(' ', '\t'))(0)
+		  		if (read.offsetFromStart >= 0) {
+		  			colors.find(seqName) match {
+				  		case Some(idxColor) => out.println((" " * (read.offsetFromStart)) + Color.decodeFirst(idxColor.seq.text).drop(read.startCoord))
+				  		case None => out.println((" " * (1 + read.offsetFromStart)) + idxseq.seq.text.drop(read.startCoord))
+		  			}
+		  		}
+		  	}
+		  	case _ => throw new Exception("Read %d not found".format(read.readId))		  
+		  }
+	  }
+  }
 
-  def mappedReads(things: Iterator[Thing],
+  def dumpContigs(things: Iterator[Thing],
     seqs: SeqDB,
     contigs: SeqDB,
-    colors: SeqDB) = {
+    colors: SeqDB,
+    output:File ) = {
 
     for (thing <- things) {
       /*
@@ -22,47 +47,36 @@ object DumpContigs {
        */
       if (thing.isInstanceOf[NR]) {
         val nr = thing.asInstanceOf[NR]
-        println("=" * 50)
-        println("Node " + nr.nodeId)
-        
+
         /* print contig sequence */
         contigs.find(nr.nodeId.abs) match {
-          case Some(idxseq) => println(" " + Color.de2color(idxseq.seq.text))
-          case None => throw new Exception("Contig %d not found".format(nr.nodeId))
-        }
-        
-        /* Print the aligned read */
-        for (read <- nr.reads.sortBy(_.offsetFromStart)) {
-          seqs.find(read.readId) match {
-            case Some(idxseq) =>
-              val seqName = idxseq.seq.name.split(Array(' ', '\t'))(0)
-              if (read.offsetFromStart >= 0) {
-                colors.find(seqName) match {
-                  case Some(idxColor) => println((" " * (read.offsetFromStart)) + Color.decodeFirst(idxColor.seq.text).drop(read.startCoord))
-                  case None => println((" " * (1 + read.offsetFromStart)) + idxseq.seq.text.drop(read.startCoord))
-                }
-              }
-            case _ => throw new Exception("Read %d not found".format(read.readId))
+          case Some(idxseq) => {
+        	  val out = new PrintStream (
+        	 		  new File(output.getAbsolutePath + "/" + 
+        	 		 		  "node%d.txt".format(nr.nodeId)))
+        	  println("Processing Node %d".format(nr.nodeId))
+        	  dumpContig(out,nr,idxseq.seq,seqs,colors)
+        	  out.close
           }
+          case _ => None
         }
-        println("*" * 50)
-      } else if (thing.isInstanceOf[SEQ]) {
-        val seq = thing.asInstanceOf[SEQ]
       }
     }
   }
 
   def openAndImportInt(source: String, dbname: String, f: (BioSeq => Int)): SeqDB = {
-    val dbfile = new File(dbname)
-    if (dbfile.exists) dbfile.delete
-    val db = SeqDB.openDB(dbname)
-    dbfile.deleteOnExit
-    db.importFastaInt(Source.fromFile(source), f);
-
-    db
+	  println("Reading file " + source)
+	  val dbfile = new File(dbname)
+	  if (dbfile.exists) dbfile.delete
+	  val db = SeqDB.openDB(dbname)
+	  dbfile.deleteOnExit
+	  db.importFastaInt(Source.fromFile(source), f);
+	   
+	  db
   }
 
   def openAndImportStr(source: String, dbname: String, f: (BioSeq => String)): SeqDB = {
+	println("Reading file " + source)
     val dbfile = new File(dbname)
     if (dbfile.exists) dbfile.delete
     val db = SeqDB.openDB(dbname)
@@ -87,7 +101,8 @@ object DumpContigs {
       val seqsFile = args(0) + "/Sequences"
       val contigsFile = args(0) + "/contigs.fa"
       val colorFile = args(1)
-
+      val outputDir = args(2)
+      
       println("Graph file: " + graphFile)
       println("Seqs file: " + seqsFile)
       println("Contigs file: " + contigsFile)
@@ -100,7 +115,11 @@ object DumpContigs {
 
       val (header, things) = readGraph(Source.fromFile(graphFile))
 
-      mappedReads(things, seqdb, contigsdb, colordb)
+      val output = new File(outputDir);
+      if (!output.exists) {
+    	  output.mkdirs;
+      }
+      dumpContigs(things, seqdb, contigsdb, colordb,output)
       seqdb.close
     }
   }
