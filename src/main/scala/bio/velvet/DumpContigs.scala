@@ -8,7 +8,7 @@ import bio.ReadFasta.readFasta
 import bio.BioSeq
 import bio.db.SeqDB
 
-object MappedReads {
+object DumpContigs {
 
   def mappedReads(things: Iterator[Thing],
     seqs: SeqDB,
@@ -16,35 +16,33 @@ object MappedReads {
     colors: SeqDB) = {
 
     for (thing <- things) {
+      /*
+       *  Take only the NR entries 
+       * 
+       */
       if (thing.isInstanceOf[NR]) {
         val nr = thing.asInstanceOf[NR]
         println("=" * 50)
         println("Node " + nr.nodeId)
+        
+        /* print contig sequence */
         contigs.find(nr.nodeId.abs) match {
-          case Some(idxseq) => 
-          	//println("  " + idxseq.seq.text)
-          	println(" " + Color.de2color(idxseq.seq.text))
-          case None => println(None)
+          case Some(idxseq) => println(" " + Color.de2color(idxseq.seq.text))
+          case None => throw new Exception("Contig %d not found".format(nr.nodeId))
         }
+        
+        /* Print the aligned read */
         for (read <- nr.reads.sortBy(_.offsetFromStart)) {
           seqs.find(read.readId) match {
             case Some(idxseq) =>
               val seqName = idxseq.seq.name.split(Array(' ', '\t'))(0)
-              if (read.offsetFromStart >= 0) {                
+              if (read.offsetFromStart >= 0) {
                 colors.find(seqName) match {
-                  case Some(idxColor) => print((" " * (read.offsetFromStart)) + Color.decodeFirst(idxColor.seq.text).drop(read.startCoord))
-                  case None => print((" " * (1 + read.offsetFromStart)) + idxseq.seq.text.drop(read.startCoord))
+                  case Some(idxColor) => println((" " * (read.offsetFromStart)) + Color.decodeFirst(idxColor.seq.text).drop(read.startCoord))
+                  case None => println((" " * (1 + read.offsetFromStart)) + idxseq.seq.text.drop(read.startCoord))
                 }
-                //println("\t\t" + read.readId + " " + read.offsetFromStart + " " + read.startCoord)
-                println()
-              } 
-              /*else {
-                colors.find(seqName) match {
-                  case Some(idxColor) => print(idxColor.seq.text)
-                  case None => print(idxseq.seq.text)
-                }
-              }*/
-            case _ => println("read " + read.readId + " not found")
+              }
+            case _ => throw new Exception("Read %d not found".format(read.readId))
           }
         }
         println("*" * 50)
