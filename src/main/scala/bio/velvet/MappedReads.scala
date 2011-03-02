@@ -23,7 +23,7 @@ object MappedReads {
         contigs.find(nr.nodeId.abs) match {
           case Some(idxseq) => 
           	//println("  " + idxseq.seq.text)
-          	println("  " + Color.de2color(idxseq.seq.text))
+          	println(" " + Color.de2color(idxseq.seq.text))
           case None => println(None)
         }
         for (read <- nr.reads.sortBy(_.offsetFromStart)) {
@@ -32,8 +32,8 @@ object MappedReads {
               val seqName = idxseq.seq.name.split(Array(' ', '\t'))(0)
               if (read.offsetFromStart >= 0) {                
                 colors.find(seqName) match {
-                  case Some(idxColor) => print((" " * (read.offsetFromStart)) + idxColor.seq.text.drop(read.startCoord))
-                  case None => print((" " * (2 + read.offsetFromStart)) + idxseq.seq.text.drop(read.startCoord))
+                  case Some(idxColor) => print((" " * (read.offsetFromStart)) + Color.decodeFirst(idxColor.seq.text).drop(read.startCoord))
+                  case None => print((" " * (1 + read.offsetFromStart)) + idxseq.seq.text.drop(read.startCoord))
                 }
                 //println("\t" + read.readId + " " + read.offsetFromStart + " " + read.startCoord + " " + seq.text)
               } 
@@ -45,7 +45,8 @@ object MappedReads {
               }*/
             case _ => println("read " + read.readId + " not found")
           }
-          println("\t\t" + read.readId + " " + read.offsetFromStart + " " + read.startCoord)          
+          println()
+          //println("\t\t" + read.readId + " " + read.offsetFromStart + " " + read.startCoord)          
         }
         println("*" * 50)
       } else if (thing.isInstanceOf[SEQ]) {
