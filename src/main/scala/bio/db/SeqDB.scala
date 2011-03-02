@@ -8,7 +8,8 @@ import com.db4o.internal.InternalObjectContainer
 import com.db4o.internal.query.Db4oQueryExecutionListener
 import com.db4o.internal.query.NQOptimizationInfo
 
-case class IndexedBioSeq(seq:BioSeq,idx:Int)
+case class IntIndexedBioSeq(seq:BioSeq,idx:Int)
+case class StringIndexedBioSeq(seq:BioSeq,idx:String)
 
 class MyDb4oQueryExecutionListener extends Db4oQueryExecutionListener() {
 	def notifyQueryExecuted(info:NQOptimizationInfo) {
@@ -16,48 +17,76 @@ class MyDb4oQueryExecutionListener extends Db4oQueryExecutionListener() {
     }
 }
 
-object SeqDB {
-	def openDB(dbFile:String) = {
-		val config = Db4oEmbedded.newConfiguration
-		config.common.objectClass(classOf[IndexedBioSeq]).objectField("idx").indexed(true);
-		val db = Db4oEmbedded.openFile(config,dbFile);
-		(db.asInstanceOf[InternalObjectContainer]).getNativeQueryHandler().addListener(new MyDb4oQueryExecutionListener());
-		db
-	}
+class SeqDB(db:ObjectContainer) {
 	
-	def importFasta(db:ObjectContainer,in:Source,f:(BioSeq => Int)) {
+	def importFastaInt(in:Source,f:(BioSeq => Int)) {
 		val seqs = readFasta(in);
 		var i = 1;
 		for(seq <-seqs ) {
-			db store (new IndexedBioSeq(seq,f(seq)))
+			db store (new IntIndexedBioSeq(seq,f(seq)))
+			if (i%1000==0) db.commit;
+			i += 1;
+		}
+		db.commit
+	}
+
+	def importFastaStr(in:Source,f:(BioSeq => String)) {
+		val seqs = readFasta(in);
+		var i = 1;
+		for(seq <-seqs ) {
+			db store (new StringIndexedBioSeq(seq,f(seq)))
 			if (i%1000==0) db.commit;
 			i += 1;
 		}
 		db.commit
 	}
 	
-	def listFasta(db:ObjectContainer) {
+	
+	def listFasta() {
 		val q = db.query();
-		q.constrain(classOf[IndexedBioSeq]);
+		q.constrain(classOf[BioSeq]);
 		
 		val res = q.execute;
 		while(res.hasNext) {
 			println("R: " + res.next)
 		}
 	}
-	def getSeq(db:ObjectContainer,readId:Int):Option[IndexedBioSeq] = {
+
+	def find(idx:Int):Option[IntIndexedBioSeq] = {
 		val q = db.query
-		q.constrain(classOf[IndexedBioSeq])
-		q.descend("idx").constrain(readId);
+		q.constrain(classOf[IntIndexedBioSeq])
+		q.descend("idx").constrain(idx);
+		val res = q.execute;
+		
+		if (res.hasNext) Some(res.next)  else None
+	}
+
+	def find(idx:String):Option[StringIndexedBioSeq] = {
+		val q = db.query
+		q.constrain(classOf[StringIndexedBioSeq])
+		q.descend("idx").constrain(idx);
 		val res = q.execute;
 		
 		if (res.hasNext) Some(res.next)  else None
 	}
 	
+	def close { db.close }
+}
+
+object SeqDB {
+	def openDB(dbFile:String) = {
+		val config = Db4oEmbedded.newConfiguration
+		config.common.objectClass(classOf[IntIndexedBioSeq]).objectField("idx").indexed(true);
+		config.common.objectClass(classOf[StringIndexedBioSeq]).objectField("idx").indexed(true);
+		val db = Db4oEmbedded.openFile(config,dbFile);
+		(db.asInstanceOf[InternalObjectContainer]).getNativeQueryHandler().addListener(new MyDb4oQueryExecutionListener());
+		new SeqDB(db)
+	}
+	
 	def main(args:Array[String]) {		
 		val db=openDB(args(1))
-		importFasta(db,Source.fromFile(args(0)),_.idx)
-		println(getSeq(db,1));
+		db.importFastaInt(Source.fromFile(args(0)),_.idx)
+		println(db find 1);
 		db.close
 	}
 }
