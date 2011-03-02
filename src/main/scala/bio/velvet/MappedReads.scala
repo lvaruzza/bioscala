@@ -35,7 +35,8 @@ object MappedReads {
                   case Some(idxColor) => print((" " * (read.offsetFromStart)) + Color.decodeFirst(idxColor.seq.text).drop(read.startCoord))
                   case None => print((" " * (1 + read.offsetFromStart)) + idxseq.seq.text.drop(read.startCoord))
                 }
-                //println("\t" + read.readId + " " + read.offsetFromStart + " " + read.startCoord + " " + seq.text)
+                //println("\t\t" + read.readId + " " + read.offsetFromStart + " " + read.startCoord)
+                println()
               } 
               /*else {
                 colors.find(seqName) match {
@@ -45,8 +46,6 @@ object MappedReads {
               }*/
             case _ => println("read " + read.readId + " not found")
           }
-          println()
-          //println("\t\t" + read.readId + " " + read.offsetFromStart + " " + read.startCoord)          
         }
         println("*" * 50)
       } else if (thing.isInstanceOf[SEQ]) {
