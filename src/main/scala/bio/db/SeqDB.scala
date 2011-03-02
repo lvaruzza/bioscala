@@ -33,21 +33,21 @@ object SeqDB {
 			if (i%1000==0) db.commit;
 			i += 1;
 		}
-		
+		db.commit
 	}
 	
 	def listFasta(db:ObjectContainer) {
 		val q = db.query();
-		q.constrain(classOf[BioSeq]);
+		q.constrain(classOf[IndexedBioSeq]);
 		
 		val res = q.execute;
 		while(res.hasNext) {
 			println("R: " + res.next)
 		}
 	}
-	def getSeq(db:ObjectContainer,readId:Int):Option[BioSeq] = {
+	def getSeq(db:ObjectContainer,readId:Int):Option[IndexedBioSeq] = {
 		val q = db.query
-		q.constrain(classOf[BioSeq])
+		q.constrain(classOf[IndexedBioSeq])
 		q.descend("idx").constrain(readId);
 		val res = q.execute;
 		
