@@ -47,7 +47,8 @@ object DumpContigs {
        */
       if (thing.isInstanceOf[NR]) {
         val nr = thing.asInstanceOf[NR]
-
+        println(nr);
+        
         /* print contig sequence */
         contigs.find(nr.nodeId.abs) match {
           case Some(idxseq) => {

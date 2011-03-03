@@ -24,7 +24,11 @@ class SeqDB(db:ObjectContainer) {
 		var i = 1;
 		for(seq <-seqs ) {
 			db store (new IntIndexedBioSeq(seq,f(seq)))
-			if (i%1000==0) db.commit;
+			if (i%1000==0) {
+				print(".")
+				Console.out.flush
+				db.commit;				
+			}
 			i += 1;
 		}
 		db.commit
@@ -35,7 +39,11 @@ class SeqDB(db:ObjectContainer) {
 		var i = 1;
 		for(seq <-seqs ) {
 			db store (new StringIndexedBioSeq(seq,f(seq)))
-			if (i%1000==0) db.commit;
+			if (i%1000==0) {
+				print(".")
+				Console.out.flush				
+				db.commit;				
+			}
 			i += 1;
 		}
 		db.commit

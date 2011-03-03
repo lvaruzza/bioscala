@@ -30,12 +30,11 @@ case class SEQ(val seqId: Int, nodes: Array[NodePos])
 
 class GraphIterator(lines:Iterator[String]) extends Iterator[Thing] {
    private val stateRegexp = """^([^ \t\n]+)""".r
-
 	
-	var line = ""
+   var line = lines.next
 
-  def readState(line: String): Symbol = {
-    val st = (stateRegexp.findFirstIn(line) match {
+   def readState(line: String): Symbol = {
+    (stateRegexp.findFirstIn(line) match {
       case Some(x) => x match {
         case "NODE" => 'Node
         case "ARC" => 'Arc
@@ -45,7 +44,6 @@ class GraphIterator(lines:Iterator[String]) extends Iterator[Thing] {
       }
       case None => 'None
     })
-    st
   }
 
   def readNode = {
