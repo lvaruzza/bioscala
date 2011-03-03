@@ -31,6 +31,7 @@ class SeqDB(db:ObjectContainer) {
 			}
 			i += 1;
 		}
+		println
 		db.commit
 	}
 
@@ -46,6 +47,7 @@ class SeqDB(db:ObjectContainer) {
 			}
 			i += 1;
 		}
+		println
 		db.commit
 	}
 	

@@ -51,34 +51,24 @@ object DumpContigs extends ContigsWalker {
       out.close
     }
   }
-
+  
   
   def main(args: Array[String]) {
-    if (args.length > 0) {
-      val graphFile = args(0) + "/LastGraph"
-      val seqsFile = args(0) + "/Sequences"
-      val contigsFile = args(0) + "/contigs.fa"
-      val colorFile = args(1)
+    if (args.length >= 3) {
       val outputDir = args(2)
 
-      println("Graph file: " + graphFile)
-      println("Seqs file: " + seqsFile)
-      println("Contigs file: " + contigsFile)
-      println("color file: " + colorFile)
-
-      val contigsdb = importContigs(contigsFile) 
-      //SeqDB.listFasta(contigsdb);        
-      val seqdb = openAndImportInt(seqsFile, "seqs.db4o", _.idx)
-      val colordb = openAndImportStr(colorFile, "color.db4o", _.name)
-
-      val (header, things) = readGraph(Source.fromFile(graphFile))
 
       val output = new File(outputDir);
       if (!output.exists) {
         output.mkdirs;
       }
+      
+      val (header,things,contigsdb,seqdb,colordb) = readInputFiles(args(0),args(1))
+      
       dumpContigs(things, seqdb, contigsdb, colordb, output)
       seqdb.close
+      contigsdb.close
+      colordb.close
     }
   }
 }
