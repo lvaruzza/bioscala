@@ -28,8 +28,11 @@ case class NodePos(val nodeId: Int, val offsetFromStart: Int,
 case class SEQ(val seqId: Int, nodes: Array[NodePos])
   extends Thing
 
-object ReadGraph {
-  val stateRegexp = "^([^ \t\n]+)".r
+class GraphIterator(lines:Iterator[String]) extends Iterator[Thing] {
+   private val stateRegexp = """^([^ \t\n]+)""".r
+
+	
+	var line = ""
 
   def readState(line: String): Symbol = {
     val st = (stateRegexp.findFirstIn(line) match {
@@ -45,29 +48,27 @@ object ReadGraph {
     st
   }
 
-  def readNode(line: String, lines: Iterator[String]): (Option[String], Thing) = {
+  def readNode = {
     val vals = line.split(Array('\t', ' ')).drop(1).map(x => x.toInt)
     val end = lines.next()
     val twin = lines.next()
     val node = new Node(vals(0), end, twin, vals(1), vals(2), vals(3), vals(4))
     //println(node)
     if (lines.hasNext)
-      (Some(lines.next()), node)
-    else
-      (None, node)
+      line = lines.next()
+    node
   }
 
-  def readArc(line: String, lines: Iterator[String]): (Option[String], Thing) = {
+  def readArc = {
     val vals = line.split(Array('\t', ' ')).drop(1).map(_.toInt)
     val arc = new Arc(vals(0), vals(1), vals(2))
     //println(arc)
     if (lines.hasNext)
-      (Some(lines.next()), arc)
-    else
-      (None, arc)
+      line = lines.next()
+    arc
   }
 
-  def readNR(line: String, lines: Iterator[String]): (Option[String], Thing) = {
+  def readNR = {
     val vals = line.split(Array('\t', ' ')).drop(1).map(_.toInt)
     var newLine = ""
     var newState = 'None
@@ -83,15 +84,14 @@ object ReadGraph {
         }
       } while (newState == 'None && lines.hasNext)
       val nr = new NR(vals(0), vals(1), ab.toArray)
-      (Some(newLine), nr)
+      line = newLine
+      nr
     } else
-      (None, new NR(vals(0), vals(1), Array[ReadPos]()))
+      new NR(vals(0), vals(1), Array[ReadPos]())
   }
 
-  def str2ints(line: String, dropHead: Int) =
-    line.split(Array('\t', ' ')).drop(dropHead).map(_.toInt)
 
-  def readSEQ(line: String, lines: Iterator[String]): (Option[String], Thing) = {
+  def readSEQ  = {
     val vals = line.split(Array('\t', ' ')).drop(1).map(_.toInt)
     var newLine = ""
     var newState = 'None
@@ -107,39 +107,37 @@ object ReadGraph {
         }
       } while (newState == 'None && lines.hasNext)
       val seq = new SEQ(vals(0), ab.toArray)
-      (Some(newLine), seq)
+      line = newLine 
+      seq
     } else
-      (None, new SEQ(vals(0), Array[NodePos]()))
+      new SEQ(vals(0), Array[NodePos]())
   }
 
-  @tailrec
-  def readThing(line: String, lines: Iterator[String], acc: List[Thing]): List[Thing] = {
-    val (newLine, thing) = readState(line) match {
-      case 'Node => readNode(line, lines)
-      case 'Arc => readArc(line, lines)
-      case 'NR => readNR(line, lines)
-      case 'SEQ => readSEQ(line, lines)
-      case _ => (None, new Nothing())
+  def readThing = {
+    readState(line) match {
+      case 'Node => readNode
+      case 'Arc => readArc
+      case 'NR => readNR
+      case 'SEQ => readSEQ
+      case _ => new Nothing()
     }
-
-    if (thing.isInstanceOf[Nothing])
-      acc
-    else
-      newLine match {
-        case Some(ll) => readThing(ll, lines, thing :: acc)
-        case None => acc
-      }
   }
+		
+	def hasNext = lines.hasNext
+	
+	def next = readThing
+}
+
+object ReadGraph {
+  def str2ints(line: String, dropHead: Int) =
+    line.split(Array('\t', ' ')).drop(dropHead).map(_.toInt)
 
   def readGraph(in: Source): (Array[Int], Iterator[Thing]) = {
     val lines = in.getLines
 
     val header = str2ints(lines.next, 0)
 
-    if (lines.hasNext)
-      (header, readThing(lines.next(), lines, Nil).iterator)
-    else
-      (header, Nil.iterator)
+    (header, new GraphIterator(lines))
   }
 
   def main(args: Array[String]) {
