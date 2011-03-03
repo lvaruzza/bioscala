@@ -44,8 +44,10 @@ object DumpContigs extends ContigsWalker {
       val out = new PrintStream(
         new File(output.getAbsolutePath + "/" +
           "node%d.txt".format(nr.nodeId)))
+      
       println("Processing Node %d".format(nr.nodeId))
       dumpContig(out, nr, seq, seqs, colors)
+      
       out.close
     }
   }
