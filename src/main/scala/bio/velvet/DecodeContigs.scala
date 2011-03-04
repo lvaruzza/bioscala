@@ -19,17 +19,16 @@ object DecodeContigs extends VelvetReader {
 
       val extLen = minPos + colorSeq.length
       val extSeq = " "*minPos + colorSeq
-      val baseDensity = Array.ofDim[Int](extLen,4)
-      val colorDensity = Array.ofDim[Int](extLen,4)
+      val baseDensity = Array.ofDim[Int](extLen,5)
+      val colorDensity = Array.ofDim[Int](extLen,5)
     	  
       for (read <- sortedReads) {
         withColor(read, seqs, colors) { color =>
         	val i = read.offsetFromStart - read.startCoord - 1 + minPos
-        	println((i,read.offsetFromStart,read.startCoord,minPos))
         	val colorRead = Color.decodeFirst(color.text)
         	baseDensity(i)(Color.base2num(colorRead(0))) += 1
         	for(j <- Range(1,colorRead.length-1)) {
-        		if (i+j < extLen) colorDensity(i+j)(colorRead(j) - '0')
+        		if (i+j < extLen) colorDensity(i+j)(Color.color2num(colorRead(j)))+=1
         	}
         	print((" " * i) + colorRead)
         	println("\t" + read.offsetFromStart + " " + read.startCoord)

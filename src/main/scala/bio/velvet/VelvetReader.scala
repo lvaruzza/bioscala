@@ -10,23 +10,22 @@ trait VelvetReader {
   def openAndImportInt(source: String, dbname: String, f: (BioSeq => Int)): SeqDB = {
     println("Reading file " + source)
     val dbfile = new File(dbname)
-    if (dbfile.exists) dbfile.delete
-    val db = SeqDB.openDB(dbname)
-    dbfile.deleteOnExit
-    db.importFastaInt(Source.fromFile(source), f);
-
-    db
+    if (dbfile.exists) {
+    	SeqDB.openDB(dbname)    	
+    } else {
+    	val db = SeqDB.openDB(dbname)
+    	db.importFastaInt(Source.fromFile(source), f);
+    }
   }
 
   def openAndImportStr(source: String, dbname: String, f: (BioSeq => String)): SeqDB = {
     println("Reading file " + source)
     val dbfile = new File(dbname)
-    if (dbfile.exists) dbfile.delete
-    val db = SeqDB.openDB(dbname)
-    dbfile.deleteOnExit
-    db.importFastaStr(Source.fromFile(source), f);
-
-    db
+    if (dbfile.exists) {
+    	SeqDB.openDB(dbname)
+    } else {
+    	SeqDB.openDB(dbname).importFastaStr(Source.fromFile(source), f);
+    }
   }
 
   val NodeRe = """^NODE_(\d+).*""".r
