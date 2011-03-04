@@ -89,4 +89,13 @@ trait VelvetReader {
 
     (header, things, contigsdb, seqdb, colordb)
   }
+  
+  def getOutput(outputDir:String) = {      
+      val output = new File(outputDir);
+      if (!output.exists) {
+        output.mkdirs;
+      }
+      output
+  }
+    
 }

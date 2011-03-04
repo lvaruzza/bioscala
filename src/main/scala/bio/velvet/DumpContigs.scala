@@ -52,16 +52,12 @@ object DumpContigs extends VelvetReader {
     }
   }
   
-  
+
   def main(args: Array[String]) {
     if (args.length >= 3) {
       val outputDir = args(2)
 
-
-      val output = new File(outputDir);
-      if (!output.exists) {
-        output.mkdirs;
-      }
+      val output = getOutput(outputDir);
       
       val (header,things,contigsdb,seqdb,colordb) = readInputFiles(args(0),args(1))
       

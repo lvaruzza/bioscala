@@ -15,7 +15,9 @@ object Color {
 				   't'->'3',
 				   'n'->'4',
 				   '.'->'.')
-
+				  
+	val num2base = Array('A','C','G','T','N')
+	
 	val base2num = Map('A'->0,
 				   	   'C'->1,
 				   	   'G'->2,
@@ -33,30 +35,11 @@ object Color {
 				   	    '2'->2,
 				   	    '3'->3,
 				   	    '.'->4)
-				   	   
+				   	    
+	val num2color = Array('0','1','2','3','.')
+	
 	val c2de =de2c.map(x => (x._2,x._1))
 
-/*
-    color2seq['A']['0'] = 'A';
-    color2seq['A']['1'] = 'C';
-    color2seq['A']['2'] = 'G';
-    color2seq['A']['3'] = 'T';
-    
-    color2seq['C']['0'] = 'C';
-    color2seq['C']['1'] = 'A';
-    color2seq['C']['2'] = 'T';
-    color2seq['C']['3'] = 'G';
-    
-    color2seq['G']['0'] = 'G';
-    color2seq['G']['1'] = 'T';
-    color2seq['G']['2'] = 'A';
-    color2seq['G']['3'] = 'C';
-    
-    color2seq['T']['0'] = 'T';    
-    color2seq['T']['1'] = 'G';
-    color2seq['T']['2'] = 'C';
-    color2seq['T']['3'] = 'A';
-*/
 	
 	val c2b = Map('A' -> Map('0'->'A',
 							 '1'->'C',
