@@ -7,7 +7,28 @@ object DecodeContig {
 	def maxIdx (cols:Array[Int]) = 
 		cols.zipWithIndex.reduceLeft({(acc,x) => if (x._1 > acc._1) x else acc}) 
 		
-	def decodeContig(colorSeq:String,displacement:Int,
+	def printResults(result:String,starts:String,decoded:String) {
+      println("r: " + result)
+      println("s: " + starts)
+      println("d: " + decoded)
+      print("x: ")
+      for(i <- Range(0,result.length)) {
+    	  print(if ((starts(i) != ' ') &&  (starts(i) != decoded(i))) 'X' else ' ')
+      }
+      
+      println		
+	}
+	
+	
+	def correctStrand(strand:Char,str:String) = {
+		if (strand == '+')
+			str
+		else {
+			str.reverse.map(Color.revcomp)
+		}
+	}
+	
+	def decodeContig(colorSeq:String,displacement:Int,strand:Char,
 			baseDensity:Array[Array[Int]],
 			colorDensity:Array[Array[Int]]) {
 
@@ -43,15 +64,10 @@ object DecodeContig {
     	   lastColor = color
     	   i+=1
       }
-	      
-      println("r: " + result.mkString)
-      println("s: " + starts.mkString)
-      println("d: " + decodedStr.mkString)
-      print("x: ")
-      for(i <- Range(0,result.length)) {
-    	  print(if ((starts(i) != ' ') &&  (starts(i) != decodedStr(i))) 'X' else ' ')
-      }
-      println
+      printResults(
+    		  correctStrand(strand,result.mkString),
+    		  correctStrand(strand,starts.mkString),
+    		  correctStrand(strand,decodedStr.mkString))
 	}
 	
 	def decodeContigFile(file:File) {
@@ -59,7 +75,7 @@ object DecodeContig {
 		
 		val c = in.readObject.asInstanceOf[ContigAlign]
 		
-		decodeContig(c.colorSeq,c.displacement,c.baseDensity,c.colorDensity)
+		decodeContig(c.colorSeq,c.displacement,c.strand,c.baseDensity,c.colorDensity)
 	}
 	
 	def main(args:Array[String]) {

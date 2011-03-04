@@ -6,6 +6,7 @@ import java.io._
 @serializable
 case class ContigAlign(val colorSeq:String,
 					   val displacement:Int,
+					   val strand:Char,
 					   val baseDensity:Array[Array[Int]],
 					   val colorDensity:Array[Array[Int]])
 
@@ -55,7 +56,7 @@ object ExportContigs extends VelvetReader {
     	  i+=1
       }
       
-      outObj.writeObject(new ContigAlign(colorSeq,minPos,baseDensity,colorDensity))
+      outObj.writeObject(new ContigAlign(colorSeq,minPos,(if (nr.nodeId < 0) '-' else '+'),baseDensity,colorDensity))
       outTxt.close()
       outObj.close()
     }
