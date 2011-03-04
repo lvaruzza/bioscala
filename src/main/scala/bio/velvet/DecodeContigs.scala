@@ -24,11 +24,12 @@ object DecodeContigs extends ContigsWalker {
     	  
       for (read <- sortedReads) {
         withColor(read, seqs, colors) { color =>
-        	val i = read.offsetFromStart- read.startCoord - 1 + minPos
+        	val i = read.offsetFromStart - read.startCoord - 1 + minPos
+        	println((i,read.offsetFromStart,read.startCoord,minPos))
         	val colorRead = Color.decodeFirst(color.text)
         	baseDensity(i)(Color.base2num(colorRead(0))) += 1
-        	for(j <- Range(1,colorRead.length)) {
-        		colorDensity(i+j)(colorRead(j) - '0')
+        	for(j <- Range(1,colorRead.length-1)) {
+        		if (i+j < extLen) colorDensity(i+j)(colorRead(j) - '0')
         	}
         	print((" " * i) + colorRead)
         	println("\t" + read.offsetFromStart + " " + read.startCoord)
