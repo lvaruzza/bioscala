@@ -4,7 +4,7 @@ import bio.db.SeqDB
 import bio.Color
 
 
-object DecodeContigs extends ContigsWalker {
+object DecodeContigs extends VelvetReader {
 
   def decodeContigs(things: Iterator[Thing], contigs: SeqDB, seqs: SeqDB, colors: SeqDB) {
     def readSort(read: ReadPos) = read.offsetFromStart - read.startCoord - 1

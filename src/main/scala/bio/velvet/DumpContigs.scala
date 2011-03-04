@@ -9,7 +9,7 @@ import bio.BioSeq
 import bio.db.SeqDB
 import java.io.PrintStream
 
-object DumpContigs extends ContigsWalker {
+object DumpContigs extends VelvetReader {
   def dumpContig(out: PrintStream, nr: NR, contig: BioSeq, seqs: SeqDB, colors: SeqDB) {
     val colorSeq = Color.de2color(contig.text)
     if (nr.nodeId < 0) {

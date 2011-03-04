@@ -5,7 +5,7 @@ import bio.BioSeq
 import scala.io.Source
 import bio.velvet.ReadGraph.readGraph
 
-trait ContigsWalker {
+trait VelvetReader {
 
   def openAndImportInt(source: String, dbname: String, f: (BioSeq => Int)): SeqDB = {
     println("Reading file " + source)
