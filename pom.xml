@@ -47,6 +47,11 @@
 			<artifactId>db4o-full-java5</artifactId>
 			<version>8.1-SNAPSHOT</version>
 		</dependency>
+		<dependency>
+			<groupId>commons-math</groupId>
+			<artifactId>commons-math</artifactId>
+			<version>1.2</version>
+		</dependency>
 	</dependencies>
 
 	<build>
