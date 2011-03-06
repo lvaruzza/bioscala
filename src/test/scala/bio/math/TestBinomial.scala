@@ -10,7 +10,7 @@ import org.specs.runner._
 class BinomislSpecTest extends Specification with JUnit {
 	"logBinomial(10,3)" should {
 		"be equal to 4.787492" in {
-			Binomial.logBinomialCoef(10,3) mustEqual 4.787492
+			Binomial.logBinomialCoef(10,3) must beCloseTo(4.787492,1e-6)
 		}
 	}
 }
