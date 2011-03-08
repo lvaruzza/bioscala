@@ -9,15 +9,25 @@ import org.junit.Test
 @Test
 @RunWith(classOf[JUnitSuiteRunner])
 class BionomalSpecTest extends Specification with JUnit {
-	"logBinomialCoef(10,3)" should {
-		"be equal to 4.787492" in {
-			Binomial.logBinomialCoef(10,3) must beCloseTo(4.787492,1e-6)
+	"logBinomialCoef" should {
+		"(10,3) be equal to 4.787492" in {
+			Binomial.logCoef(10,3) must beCloseTo(4.787492,1e-6)
+		} 
+		"(400,130) be equal to 4.787492" in {
+			Binomial.logCoef(400,130) must beCloseTo(249.0755,1e-4)
 		}
 	}
 	
-	"logBinomialProb(10,3)" should {
-		"be equal to -0.2537637" in {
-			Binomial.logBinomialProb(0.25,10,3) must beCloseTo(-1.385166,1e-6)
+	
+	"logProb(0.25,10,3)" should {
+		"(0.9,0,0) be equal to 0" in {
+			Binomial.logProb(0.9,0,0) must beCloseTo( 0,1e-6)
+		}
+		"(0.9,2,2) be equal to  -0.2107210" in {
+			Binomial.logProb(0.9,2,2) must beCloseTo( -0.2107210,1e-6)
+		}
+		"(0.25,10,3) be equal to -0.2537637" in {
+			Binomial.logProb(0.25,10,3) must beCloseTo(-1.385166,1e-6)
 		}
 	}
 	
