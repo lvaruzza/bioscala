@@ -11,10 +11,11 @@ object DecodeContigProb {
 	def maxProbBase(p:Double,c:Array[Int]) {
 		val x = maxIdx(c)
 		val sum = c.sum
-		val logProb = Binomial.logBinomialProb(p,x._1,sum) 
+		val logProb = Binomial.logProb(p,x._1,sum) 
 	}
 	
-	def printResults(result:String,starts:String,decoded:String) {
+	def printResults(chooses:String,result:String,starts:String,decoded:String) {
+      println("c: " + chooses)
       println("r: " + result)
       println("s: " + starts)
       println("d: " + decoded)
@@ -35,6 +36,8 @@ object DecodeContigProb {
 		}
 	}
 	
+	private val ArbitraryBaseProb = 0.9
+	
 	def decodeContig(colorSeq:String,displacement:Int,strand:Char,
 			baseDensity:Array[Array[Int]],
 			colorDensity:Array[Array[Int]]) {
@@ -46,32 +49,53 @@ object DecodeContigProb {
       var decodedStr = Array.ofDim[Char](extSeq.length)
       var starts = Array.ofDim[Char](extSeq.length)
       var result = Array.ofDim[Char](extSeq.length)
+      var chooses = Array.ofDim[Char](extSeq.length)
+      var lastProb = 0.0
+      
+      val probLog = new PrintStream(new FileOutputStream("probs.txt"))
       
       while(i < baseDensity.length) {
-    	  val idxBase = maxIdx(baseDensity(i))
+    	  val idxBase = maxIdx(baseDensity(i))    	  
     	  val idxColor = maxIdx(colorDensity(i))
     	  val base = (if (idxBase._1 >0) Color.num2base(idxBase._2) else ' ')
     	  val color = idxColor._2
     	  val decoded = if (i!=0 && lastBase != ' ') Color.c2b(lastBase)(Color.num2color(color)) else ' '
+    
+    	  println("lastProb = %.3e k=%d n=%d P(d)=%.3e".format(lastProb,colorDensity(i).sum,idxColor._1,
+    	 		  Binomial.logProb(0.9, colorDensity(i).sum,idxColor._1)))
     	  
-    	  println(extSeq(i) + color.toString + base.toString + decoded.toString + ": " + lastBase + " " + baseDensity(i).mkString("\t") + "\t" + colorDensity(i).mkString("\t"))
+    	  val probStart = if(base == ' ') Double.MinValue 
+    	                  else Binomial.logProb(ArbitraryBaseProb,baseDensity(i).sum,idxBase._1)
+    	                  
+    	  val probDecoded = Binomial.logProb(ArbitraryBaseProb,colorDensity(i).sum,idxColor._1) + lastProb
+    	  
+    	  println(extSeq(i) + color.toString + base.toString + decoded.toString + ": " + lastBase + " | " + baseDensity(i).mkString("\t") + "|\t" + colorDensity(i).mkString("\t"))
 
-    	   lastBase = if (base == ' ') {
-    	  	    decoded 
-    	   } else {
-    	  	   //if (base != decoded) {    	 
-    	  		  //println("Conflict Detected : base = " + base +  " (%d)".format(idxBase._1) +  
-    	  		  //		" decoded = " + decoded + "(%d)".format(idxColor._1))
-    	  	   //}
-    	  	  base
-    	   }  
+    	  
+          if (idxColor._1 == 0 || probStart > probDecoded) {
+        	  lastBase = base
+        	  lastProb = probStart
+        	  chooses(i) = '*'
+          } else {
+        	  lastBase = decoded
+        	  lastProb = probDecoded
+        	  chooses(i) = '.'
+          }
+    	   
+          println("P(start) = %.3e  P(decoded) = %.3e lastProb = %.3e".format(probStart,probDecoded,lastProb))
+    	  
+          probLog.println("%d\t%.3e\t%.3e".format(i,probStart,probDecoded))
+          
     	   decodedStr(i)=decoded
     	   starts(i)=base
     	   result(i)=lastBase
     	   lastColor = color
     	   i+=1
       }
+      probLog.close
+      
       printResults(
+    		  chooses.mkString,
     		  correctStrand(strand,result.mkString),
     		  correctStrand(strand,starts.mkString),
     		  correctStrand(strand,decodedStr.mkString))
