@@ -5,6 +5,9 @@ import bio.Color
 import bio.math.Binomial
 
 object DecodeContigImpulse {
+	
+	var debug  = false
+	
 	def maxIdx (cols:Array[Int]) = 
 		cols.zipWithIndex.reduceLeft({(acc,x) => if (x._1 > acc._1) x else acc}) 
 
@@ -61,14 +64,14 @@ object DecodeContigImpulse {
     	  val color = idxColor._2
     	  val decoded = if (i!=0 && lastBase != ' ') Color.c2b(lastBase)(Color.num2color(color)) else ' '
     
-    	  println("lastProb = %.3e k=%d n=%d P(d)=%.3e".format(lastProb,colorDensity(i).sum,idxColor._1,
-    	 		  Binomial.logProb(0.9, colorDensity(i).sum,idxColor._1)))
+    	  if (debug) println("lastProb = %.3e k=%d n=%d P(d)=%.3e".format(lastProb,colorDensity(i).sum,idxColor._1,
+    	 		  				Binomial.logProb(0.9, colorDensity(i).sum,idxColor._1)))
     	  
-    	  val probStart = if(base == ' ') 0 else 0.7
+    	  val probStart = if(base == ' ') 0 else 0.5
     	                  
-    	  val probDecoded = 0.9*lastProb
+    	  val probDecoded = if (lastProb == 0.5) 0.9 else 0.9*lastProb
     	  
-    	  println(extSeq(i) + color.toString + base.toString + decoded.toString + ": " + lastBase + " | " + baseDensity(i).mkString("\t") + "|\t" + colorDensity(i).mkString("\t"))
+    	  if (debug) println(extSeq(i) + color.toString + base.toString + decoded.toString + ": " + lastBase + " | " + baseDensity(i).mkString("\t") + "|\t" + colorDensity(i).mkString("\t"))
 
     	  
           if (idxColor._1 == 0 || probStart > probDecoded) {
@@ -81,7 +84,7 @@ object DecodeContigImpulse {
         	  chooses(i) = '.'
           }
     	   
-          println("P(start) = %.3e  P(decoded) = %.3e lastProb = %.3e".format(probStart,probDecoded,lastProb))
+          if (debug) println("P(start) = %.3e  P(decoded) = %.3e lastProb = %.3e".format(probStart,probDecoded,lastProb))
     	  
           probLog.println("%d\t%.3e\t%.3e".format(i,probStart,probDecoded))
           
@@ -93,11 +96,11 @@ object DecodeContigImpulse {
       }
       probLog.close
       
-      printResults(
-    		  chooses.mkString,
-    		  correctStrand(strand,result.mkString),
-    		  correctStrand(strand,starts.mkString),
-    		  correctStrand(strand,decodedStr.mkString))
+      if (debug) printResults(
+    		  		chooses.mkString,
+    		  		correctStrand(strand,result.mkString),
+    		  		correctStrand(strand,starts.mkString),
+    		  		correctStrand(strand,decodedStr.mkString))
 	}
 	
 	def decodeContigFile(file:File) {
