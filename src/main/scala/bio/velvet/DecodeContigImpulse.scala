@@ -4,7 +4,7 @@ import java.io._
 import bio.Color
 import bio.math.Binomial
 
-object DecodeContigProb {
+object DecodeContigImpulse {
 	def maxIdx (cols:Array[Int]) = 
 		cols.zipWithIndex.reduceLeft({(acc,x) => if (x._1 > acc._1) x else acc}) 
 
@@ -116,3 +116,5 @@ object DecodeContigProb {
 		}
 	}
 }
+
+
