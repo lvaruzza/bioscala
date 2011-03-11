@@ -19,7 +19,7 @@ class MyDb4oQueryExecutionListener extends Db4oQueryExecutionListener() {
 
 class SeqDB(db:ObjectContainer) {
 	
-	def importFastaInt(in:Source,f:(BioSeq => Int)) = {
+	def importFastaInt(in:Source,f:(BioSeq => Int)):SeqDB = {
 		val seqs = readFasta(in);
 		var i = 1;
 		for(seq <-seqs ) {
