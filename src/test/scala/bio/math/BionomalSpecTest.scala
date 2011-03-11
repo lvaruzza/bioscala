@@ -19,7 +19,7 @@ class BionomalSpecTest extends Specification with JUnit {
 	}
 	
 	
-	"logProb(0.25,10,3)" should {
+	"logProb" should {
 		"(0.9,0,0) be equal to 0" in {
 			Binomial.logProb(0.9,0,0) must beCloseTo( 0,1e-6)
 		}
