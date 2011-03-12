@@ -4,6 +4,10 @@ import java.io._
 import bio.Color
 import bio.math.Binomial
 
+/*
+ * Heuristic2 for decoding contig from color space to base space
+ * 
+ */
 object DecodeContigImpulse {
 	
 	var debug  = false

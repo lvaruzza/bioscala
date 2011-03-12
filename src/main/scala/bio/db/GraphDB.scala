@@ -14,6 +14,9 @@ class MyRelationshipTypes extends Enumeration with RelationshipType {
   val Link = Value
 }
 
+/*
+ * Graph Database
+ */
 class GraphDB(db: GraphDatabaseService) {
 
   def close { db.shutdown }
@@ -49,10 +52,10 @@ object GraphDB {
     		val arc = thing.asInstanceOf[bio.velvet.Arc]
     		val node1 = indexService.getNodes("id",arc.startNode ).iterator.next.asInstanceOf[scala.Long]
     		val node2 = indexService.getNodes("id",arc.endNode).iterator.next.asInstanceOf[scala.Long]
-    		inserter.createRelationship( node1, node2, DynamicRelationshipType.withName( "ARC" ), null );
+    		inserter.createRelationship( node1, node2, DynamicRelationshipType.withName( "Link" ), null );
     		val node3 = indexService.getNodes("id",-arc.startNode).iterator.next.asInstanceOf[scala.Long]
     		val node4 = indexService.getNodes("id",-arc.endNode).iterator.next.asInstanceOf[scala.Long]
-    		inserter.createRelationship( node3, node4, DynamicRelationshipType.withName( "ARC" ), null );
+    		inserter.createRelationship( node3, node4, DynamicRelationshipType.withName( "L" ), null );
     	}
     }
   }

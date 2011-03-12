@@ -3,6 +3,10 @@ package bio.velvet
 import java.io._
 import bio.Color
 
+/*
+ * Heuristic for decoding contig from color space to base space
+ * 
+ */
 object DecodeContig {
 	var debug = false
 	

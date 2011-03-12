@@ -5,6 +5,11 @@ import bio.BioSeq
 import scala.io.Source
 import bio.velvet.ReadGraph.readGraph
 
+/*
+ * 	Common functions for velvet file reading
+ * 
+ */
+
 trait VelvetReader {
 
   def openAndImportInt(source: String, dbname: String, f: (BioSeq => Int)): SeqDB = {

@@ -138,6 +138,11 @@ object ReadGraph {
     (header, new GraphIterator(lines))
   }
 
+  /* Demo ReadGraph
+   * 
+   * Parse the graph file and print the parsed content
+   * 
+   */
   def main(args: Array[String]) {
     if (args.length > 0) {
       val (header, things) = readGraph(Source.fromFile(args(0)))

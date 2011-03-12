@@ -4,6 +4,10 @@ import java.io._
 import bio.Color
 import bio.math.Binomial
 
+/*
+ * Tentative probabilistic decoder
+ * 
+ */
 object DecodeContigProb {
 	
 	var debug = false

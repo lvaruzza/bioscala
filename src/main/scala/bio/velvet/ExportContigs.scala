@@ -10,6 +10,10 @@ case class ContigAlign(val colorSeq:String,
 					   val baseDensity:Array[Array[Int]],
 					   val colorDensity:Array[Array[Int]])
 
+/*
+ * Export Contigs and their alignments to a binary and a text file
+ * 					   
+ */
 object ExportContigs extends VelvetReader {
 
   def exportContigs(things: Iterator[Thing], contigs: SeqDB, seqs: SeqDB, colors: SeqDB,outputDir:File) {

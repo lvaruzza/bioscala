@@ -5,6 +5,10 @@ import bio.velvet.ReadGraph.readGraph
 import scala.io.Source
 import scala.collection.mutable.ArrayBuffer
 
+/*
+ * Unfinishied
+ * 
+ */
 object BuildGraph {
   def buildGraph(things: Iterator[Thing]) = {
     val nodes = Map[Int, Node]()
