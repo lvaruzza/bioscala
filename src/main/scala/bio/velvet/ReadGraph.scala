@@ -8,7 +8,7 @@ abstract class Thing()
 
 case class Nothing() extends Thing
 
-case class Node(val id: Int, val end: String, val endTwin: String,
+case class Node(val id: Int, val endPos: String, val endNeg: String,
   val covShort1: Int,
   val oCovShort1: Int,
   val covShort2: Int,
