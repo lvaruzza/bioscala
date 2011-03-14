@@ -7,13 +7,14 @@ import org.apache.commons.io.FileUtils
 object DumpGraph extends VelvetReader {
 
 	def main(args:Array[String]) {
-		if(args.length > 0) {
+		if(args.length > 1) {
 			val input = args(0)
-			val dbfile = new File("graphdb")
+			val output = args(1)
+			val dbfile = new File(output)
 			if (dbfile.exists) {
 				FileUtils.deleteDirectory(dbfile)
 			}
-			GraphDB.importFile("graphdb", input)
+			GraphDB.importFile(dbfile.getAbsolutePath, input)
 		} else
 			println("Not enought arguments")
 	}

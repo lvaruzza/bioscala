@@ -11,6 +11,12 @@
 	</properties>
 
 	<repositories>
+	<repository>
+            <id>tinkerpop-repository</id>
+            <name>TinkerPop Maven2 Repository</name>
+            <url>http://tinkerpop.com/maven2</url>
+        </repository>
+	
 		<repository>
 			<id>scala-tools.org</id>
 			<name>Scala-Tools Maven2 Repository</name>
