@@ -11,12 +11,12 @@
 	</properties>
 
 	<repositories>
-	<repository>
-            <id>tinkerpop-repository</id>
-            <name>TinkerPop Maven2 Repository</name>
-            <url>http://tinkerpop.com/maven2</url>
-        </repository>
-	
+		<repository>
+			<id>tinkerpop-repository</id>
+			<name>TinkerPop Maven2 Repository</name>
+			<url>http://tinkerpop.com/maven2</url>
+		</repository>
+
 		<repository>
 			<id>scala-tools.org</id>
 			<name>Scala-Tools Maven2 Repository</name>
@@ -28,9 +28,9 @@
 			<url>http://source.db4o.com/maven/</url>
 		</repository>
 		<repository>
-		<id>neo4j</id>
-		<name>neo4j</name>
-		<url>http://m2.neo4j.org/</url>
+			<id>neo4j</id>
+			<name>neo4j</name>
+			<url>http://m2.neo4j.org/</url>
 		</repository>
 	</repositories>
 
@@ -59,12 +59,6 @@
 			<version>1.2</version>
 		</dependency>
 		<dependency>
-			<groupId>org.scala-tools.testing</groupId>
-			<artifactId>specs_2.8.1</artifactId>
-			<version>1.6.7.2</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>4.8.2</version>
@@ -84,6 +78,16 @@
 			<groupId>org.neo4j</groupId>
 			<artifactId>neo4j-shell</artifactId>
 			<version>1.2-1.2</version>
+		</dependency>
+		<dependency>
+			<groupId>com.tinkerpop</groupId>
+			<artifactId>blueprints</artifactId>
+			<version>0.5</version>
+		</dependency>
+		<dependency>
+			<groupId>org.scalatra</groupId>
+			<artifactId>scalatra-scalatest_2.8.1</artifactId>
+			<version>2.0.0.M3</version>
 		</dependency>
 	</dependencies>
 
@@ -118,9 +122,9 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>2.7.2</version>
 				<configuration>
-				<includes>
-					<include>**/Test*.class</include>
-				</includes>
+					<includes>
+						<include>**/Test*.class</include>
+					</includes>
 				</configuration>
 			</plugin>
 
