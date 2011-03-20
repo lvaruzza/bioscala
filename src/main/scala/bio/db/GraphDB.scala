@@ -16,6 +16,14 @@ import scala.collection.JavaConversions._
  */
 class GraphDB(db: GraphDatabaseService) {
 
+	def list() {
+		val nodes = db.getAllNodes
+		for (node <- nodes) {
+			println("node = " + node)
+		}
+	}
+	
+	
   def close { db.shutdown }
 }
 

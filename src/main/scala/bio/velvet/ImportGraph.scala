@@ -4,7 +4,7 @@ import bio.db.GraphDB
 import java.io.File
 import org.apache.commons.io.FileUtils
 
-object DumpGraph extends VelvetReader {
+object ImportGraph extends VelvetReader {
 
 	def main(args:Array[String]) {
 		if(args.length > 1) {
