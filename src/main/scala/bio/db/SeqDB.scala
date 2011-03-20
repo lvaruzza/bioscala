@@ -1,7 +1,7 @@
 package bio.db
 
 import scala.io.Source
-import bio.ReadFasta.readFasta
+import bio.ReadFasta.read
 import com.db4o._
 import bio.BioSeq
 import com.db4o.internal.InternalObjectContainer
@@ -25,7 +25,7 @@ class MyDb4oQueryExecutionListener extends Db4oQueryExecutionListener() {
 class SeqDB(db:ObjectContainer) {
 	
 	def importFastaInt(in:Source,f:(BioSeq => Int)):SeqDB = {
-		val seqs = readFasta(in);
+		val seqs = read(in);
 		var i = 1;
 		for(seq <-seqs ) {
 			db store (new IntIndexedBioSeq(seq,f(seq)))
@@ -43,7 +43,7 @@ class SeqDB(db:ObjectContainer) {
 	}
 
 	def importFastaStr(in:Source,f:(BioSeq => String)) = {
-		val seqs = readFasta(in);
+		val seqs = read(in);
 		var i = 1;
 		for(seq <-seqs ) {
 			db store (new StringIndexedBioSeq(seq,f(seq)))

@@ -1,5 +1,7 @@
 import scala.io.Source
 import scala.annotation.tailrec
+import java.io.File
+import java.io.InputStream
 
 package bio {
   case class BioSeq(val name: String, val text: String,val idx:Int)
@@ -30,13 +32,21 @@ package bio {
 
   object ReadFasta {
 
-    def readFasta(in: Source): Iterator[BioSeq] = {
+    def read(in: Source): Iterator[BioSeq] = {
       return new BioSeqIterator(in.getLines)
+    }
+    
+    def read(in: File): Iterator[BioSeq] = {
+    	return read(Source.fromFile(in))
+    }
+
+    def read(in: InputStream): Iterator[BioSeq] = {
+    	return read(Source.fromInputStream(in))
     }
 
     def main(args: Array[String]) {
       if (args.length > 0) {
-        val seqs = readFasta(Source.fromFile(args(0)))
+        val seqs = read(Source.fromFile(args(0)))
         for (seq <- seqs) println(seq)
       } else {
         println("Missing arg")

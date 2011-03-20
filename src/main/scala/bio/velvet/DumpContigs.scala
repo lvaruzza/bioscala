@@ -4,7 +4,7 @@ import scala.io.Source
 import java.io.File
 import bio.Color
 import bio.velvet.ReadGraph.readGraph
-import bio.ReadFasta.readFasta
+import bio.ReadFasta.read
 import bio.BioSeq
 import bio.db.SeqDB
 import java.io.PrintStream
