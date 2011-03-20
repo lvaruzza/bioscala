@@ -4,13 +4,14 @@ import org.scalatest.junit.JUnitSuite
 import org.junit.Test
 import org.junit.Assert._
 import scala.io.Source
+import bio.io.Fasta
 
 class TestReadFasta extends JUnitSuite {
 
 	val expected = List(BioSeq("1","ACGT",1),BioSeq("2","ACGT",2))
 	
 	def readFromStringAndTest(expected:List[BioSeq],input:String) {
-	  val it = ReadFasta.read(Source.fromString(input))
+	  val it = Fasta.read(Source.fromString(input))
 	  assertEquals(expected,it.toList)		
 	}
 	
