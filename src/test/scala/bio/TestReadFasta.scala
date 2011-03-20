@@ -1,9 +1,8 @@
-package bio.math
+package bio
 
 import org.scalatest.junit.JUnitSuite
 import org.junit.Test
 import org.junit.Assert._
-import bio._
 import scala.io.Source
 
 class TestReadFasta extends JUnitSuite {
