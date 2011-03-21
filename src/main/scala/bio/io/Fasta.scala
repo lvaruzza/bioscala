@@ -2,9 +2,12 @@ package bio.io
 
 import scala.io.Source
 import scala.annotation.tailrec
+import bio.BioSeq
+
+import java.io.OutputStream
 import java.io.File
 import java.io.InputStream
-import bio.BioSeq
+
 
 class FastaIterator(lines: Iterator[String]) extends Iterator[BioSeq] {
   private var lastLine = ""
@@ -44,10 +47,22 @@ object Fasta {
     return read(Source.fromInputStream(in))
   }
 
+  def write(out:OutputStream,seqs:Iterator[BioSeq],lineLen:Int = 100) {
+	  for(seq <- seqs) {
+		  out.write('>')
+		  out.write(seq.name.getBytes)
+		  out.write('\n')
+		  val s = seq.text
+		  for(i <- 0 until s.length by lineLen) {
+		 	  out.write(s.substring(i, i+lineLen).getBytes)
+		 	  out.write('\n')
+		  }
+	  }
+  }
+  
   def main(args: Array[String]) {
     if (args.length > 0) {
-      val seqs = read(Source.fromFile(args(0)))
-      for (seq <- seqs) println(seq)
+      write(Console.out,read(Source.fromFile(args(0))))
     } else {
       println("Missing arg")
     }
