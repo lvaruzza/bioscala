@@ -2,14 +2,15 @@ package bio.io
 
 import scala.io.Source
 import scala.annotation.tailrec
-import bio.BioSeq
+import bio._
 
 import java.io.OutputStream
 import java.io.File
 import java.io.InputStream
+import java.io.FileOutputStream
 
 
-class FastaIterator(lines: Iterator[String]) extends Iterator[BioSeq] {
+class IndexedFastaIterator(lines: Iterator[String]) extends Iterator[IndexedBioSeq] {
   private var lastLine = ""
   private var idx = 1
 
@@ -17,7 +18,7 @@ class FastaIterator(lines: Iterator[String]) extends Iterator[BioSeq] {
     lastLine = lines.next
   }
 
-  def next: BioSeq = {
+  def next: IndexedBioSeq = {
     val sb = new StringBuilder()
     val header = lastLine
     do {
@@ -25,7 +26,7 @@ class FastaIterator(lines: Iterator[String]) extends Iterator[BioSeq] {
       if (!lastLine.startsWith(">")) sb.append(lastLine)
     } while (lines.hasNext && !lastLine.startsWith(">"))
 
-    val seq = new BioSeq(header.stripPrefix(">"), sb.toString, idx)
+    val seq = new IndexedBioSeq(header.stripPrefix(">"), sb.toString, idx)
     idx += 1
     seq
   }
@@ -35,34 +36,45 @@ class FastaIterator(lines: Iterator[String]) extends Iterator[BioSeq] {
 
 object Fasta {
 
-  def read(in: Source): Iterator[BioSeq] = {
-    return new FastaIterator(in.getLines)
+  def readIndexed(in: Source): Iterator[IndexedBioSeq] = {
+    return new IndexedFastaIterator(in.getLines)
   }
 
-  def read(in: File): Iterator[BioSeq] = {
-    return read(Source.fromFile(in))
+  def readIndexed(in: File): Iterator[IndexedBioSeq] = {
+    return readIndexed(Source.fromFile(in))
   }
 
-  def read(in: InputStream): Iterator[BioSeq] = {
-    return read(Source.fromInputStream(in))
+  def readIndexed(in: String): Iterator[IndexedBioSeq] = {
+    return readIndexed(Source.fromFile(in))
   }
 
-  def write(out:OutputStream,seqs:Iterator[BioSeq],lineLen:Int = 100) {
+  def readIndexed(in: InputStream): Iterator[IndexedBioSeq] = {
+    return readIndexed(Source.fromInputStream(in))
+  }
+
+  def write(out:OutputStream,seqs:Iterator[BioSeq],lineLen:Int) {
 	  for(seq <- seqs) {
 		  out.write('>')
 		  out.write(seq.name.getBytes)
 		  out.write('\n')
 		  val s = seq.text
-		  for(i <- 0 until s.length by lineLen) {
-		 	  out.write(s.substring(i, i+lineLen).getBytes)
+		  for(i <- 0 to s.length by lineLen) {
+		 	  out.write(s.substring(i, (i+lineLen) min (s.length)).getBytes)
 		 	  out.write('\n')
 		  }
 	  }
   }
   
+  def write(filename:String,seqs:Iterator[BioSeq],lineLen:Int) {
+	   val out=new FileOutputStream(filename)
+	   write(out,seqs,lineLen)
+	   out.close
+  }
+  
   def main(args: Array[String]) {
     if (args.length > 0) {
-      write(Console.out,read(Source.fromFile(args(0))))
+      write(Console.out,
+    		  readIndexed(Source.fromFile(args(0))),50)
     } else {
       println("Missing arg")
     }

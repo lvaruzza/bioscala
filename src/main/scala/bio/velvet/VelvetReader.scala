@@ -1,7 +1,7 @@
 package bio.velvet
 import bio.db.SeqDB
 import java.io.File
-import bio.BioSeq
+import bio._
 import scala.io.Source
 import bio.velvet.ReadGraph.readGraph
 
@@ -12,7 +12,7 @@ import bio.velvet.ReadGraph.readGraph
 
 trait VelvetReader {
 
-  def openAndImportInt(source: String, dbname: String, f: (BioSeq => Int)): SeqDB = {
+  def openAndImportInt(source: String, dbname: String, f: (IndexedBioSeq => Int)): SeqDB = {
     println("Reading file " + source)
     val dbfile = new File(dbname)
     if (dbfile.exists) {
@@ -23,7 +23,7 @@ trait VelvetReader {
     }
   }
 
-  def openAndImportStr(source: String, dbname: String, f: (BioSeq => String)): SeqDB = {
+  def openAndImportStr(source: String, dbname: String, f: (IndexedBioSeq => String)): SeqDB = {
     println("Reading file " + source)
     val dbfile = new File(dbname)
     if (dbfile.exists) {

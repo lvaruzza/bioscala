@@ -3,13 +3,13 @@ package bio.db
 import scala.io.Source
 import bio.io.Fasta
 import com.db4o._
-import bio.BioSeq
+import bio._
 import com.db4o.internal.InternalObjectContainer
 import com.db4o.internal.query.Db4oQueryExecutionListener
 import com.db4o.internal.query.NQOptimizationInfo
 
-case class IntIndexedBioSeq(seq:BioSeq,idx:Int)
-case class StringIndexedBioSeq(seq:BioSeq,idx:String)
+case class IntIndexedBioSeq(seq:IndexedBioSeq,idx:Int)
+case class StringIndexedBioSeq(seq:IndexedBioSeq,idx:String)
 
 class MyDb4oQueryExecutionListener extends Db4oQueryExecutionListener() {
 	def notifyQueryExecuted(info:NQOptimizationInfo) {
@@ -24,8 +24,8 @@ class MyDb4oQueryExecutionListener extends Db4oQueryExecutionListener() {
  */
 class SeqDB(db:ObjectContainer) {
 	
-	def importFastaInt(in:Source,f:(BioSeq => Int)):SeqDB = {
-		val seqs = Fasta.read(in);
+	def importFastaInt(in:Source,f:(IndexedBioSeq => Int)):SeqDB = {
+		val seqs = Fasta.readIndexed(in);
 		var i = 1;
 		for(seq <-seqs ) {
 			db store (new IntIndexedBioSeq(seq,f(seq)))
@@ -42,8 +42,8 @@ class SeqDB(db:ObjectContainer) {
 		this
 	}
 
-	def importFastaStr(in:Source,f:(BioSeq => String)) = {
-		val seqs = Fasta.read(in);
+	def importFastaStr(in:Source,f:(IndexedBioSeq => String)) = {
+		val seqs = Fasta.readIndexed(in);
 		var i = 1;
 		for(seq <-seqs ) {
 			db store (new StringIndexedBioSeq(seq,f(seq)))
