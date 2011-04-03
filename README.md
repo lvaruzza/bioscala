@@ -16,7 +16,7 @@ Prerequisites
 How to compile
 --------------
 
-mvn install
+  mvn install
 
 How to run the commands
 -----------------------
