@@ -28,10 +28,6 @@ class GraphDB(db: GraphDatabaseService) {
 }
 
 object GraphDB {
-  class MyRelationshipTypes extends Enumeration with RelationshipType {
-    val Link = Value
-  }
-
   def openDB(filename: String) = {
     val db: GraphDatabaseService = new EmbeddedGraphDatabase(filename);
     new GraphDB(db)
