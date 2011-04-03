@@ -1,4 +1,4 @@
-bioscala
+BioScala
 ========
 
 A bioinformatics library made with the Scala Language. 
