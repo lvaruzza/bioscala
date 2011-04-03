@@ -1,11 +1,5 @@
 package bio
 
-/*object BioSeq {	
-	def revcomp(s:String) = {
-		
-	}
-}*/
-
 trait BioSeq {
 	val name: String; 
 	val text: String 

@@ -69,6 +69,8 @@ object DumpContigs extends VelvetReader {
       seqdb.close
       contigsdb.close
       colordb.close
+    } else {
+    	println("Missing args")
     }
   }
 }
