@@ -16,21 +16,23 @@ trait VelvetReader {
     println("Reading file " + source)
     val dbfile = new File(dbname)
     if (dbfile.exists) {
-    	SeqDB.openDB(dbname)    	
-    } else {
-    	val db = SeqDB.openDB(dbname)
-    	db.importFastaInt(Source.fromFile(source), f);
+    	dbfile.delete    	
     }
+    dbfile.deleteOnExit
+    val db = SeqDB.openDB(dbname).importFastaInt(Source.fromFile(source), f);
+    db
+    
   }
 
   def openAndImportStr(source: String, dbname: String, f: (IndexedBioSeq => String)): SeqDB = {
     println("Reading file " + source)
     val dbfile = new File(dbname)
     if (dbfile.exists) {
-    	SeqDB.openDB(dbname)
-    } else {
-    	SeqDB.openDB(dbname).importFastaStr(Source.fromFile(source), f);
+    	dbfile.delete
     }
+    dbfile.deleteOnExit
+    val db = SeqDB.openDB(dbname).importFastaStr(Source.fromFile(source), f);
+    db    
   }
 
   val NodeRe = """^NODE_(\d+).*""".r
