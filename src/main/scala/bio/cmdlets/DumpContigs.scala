@@ -1,4 +1,4 @@
-package bio.velvet
+package bio.cmdlets
 
 import scala.io.Source
 import java.io.File
@@ -8,12 +8,13 @@ import bio.io.Fasta
 import bio.BioSeq
 import bio.db.SeqDB
 import java.io.PrintStream
+import bio.velvet._
 
 /*
  * Display in text the contig alignments
  * 
  */
-object DumpContigs extends VelvetReader {
+class DumpContigs extends VelvetReader with Cmdlet {
   def dumpContig(out: PrintStream, nr: NR, contig: BioSeq, seqs: SeqDB, colors: SeqDB) {
     val colorSeq = Color.de2color(contig.text)
     if (nr.nodeId < 0) {
@@ -48,29 +49,29 @@ object DumpContigs extends VelvetReader {
       val out = new PrintStream(
         new File(output.getAbsolutePath + "/" +
           "node%d.txt".format(nr.nodeId)))
-      
+
       println("Processing Node %d".format(nr.nodeId))
       dumpContig(out, nr, seq, seqs, colors)
-      
+
       out.close
     }
   }
-  
 
-  def main(args: Array[String]) {
+  def run(args: Array[String]) {
     if (args.length >= 3) {
       val outputDir = args(2)
 
       val output = getOutput(outputDir);
-      
-      val (header,things,contigsdb,seqdb,colordb) = readInputFiles(args(0),args(1))
-      
+
+      val (header, things, contigsdb, seqdb, colordb) = readInputFiles(args(0), args(1))
+
       dumpContigs(things, seqdb, contigsdb, colordb, output)
       seqdb.close
       contigsdb.close
       colordb.close
     } else {
-    	println("Missing args")
+      println("Missing args!!!")
+      println("Use: dumpContigs velvetDir csfastaFile outputDir")
     }
   }
 }

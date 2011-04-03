@@ -48,6 +48,7 @@
 			<artifactId>scala-library</artifactId>
 			<version>${scala.version}</version>
 		</dependency>
+		
 		<dependency>
 			<groupId>com.db4o</groupId>
 			<artifactId>db4o-full-java5</artifactId>
@@ -151,7 +152,8 @@
 					<archive>
 						<manifest>
 							<addClasspath>true</addClasspath>
-							<classpathPrefix>lib/</classpathPrefix>							
+							<classpathPrefix>lib/</classpathPrefix>		
+							<mainClass>bio.cli.RunCmdlet</mainClass>					
 						</manifest>
 					</archive>
 				</configuration>

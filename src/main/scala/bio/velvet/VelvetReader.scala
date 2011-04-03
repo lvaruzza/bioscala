@@ -50,10 +50,10 @@ trait VelvetReader {
     }
   }
 
-  def nrWithContigWalker(things: Iterator[Thing], contigs: SeqDB)(f: ((NR, BioSeq) => Unit)) {
+  def nrWithContigWalker(things: Iterator[Thing], contigs: SeqDB)(fun: ((NR, BioSeq) => Unit)) {
     nrWalker(things) { nr =>
       contigs.find(nr.nodeId.abs) match {
-        case Some(idxseq) => f(nr, idxseq.seq)
+        case Some(idxseq) => fun(nr, idxseq.seq)
         case None => ()
       }
     }
