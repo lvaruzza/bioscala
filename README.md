@@ -11,7 +11,22 @@ Prerequisites
 -------------
 
 1. Maven >= 2
-2. scala >= 2.8
+   http://maven.apache.org/
+   
+2. Scala Language >= 2.8
+   http://www.scala-lang.org/
+   
+How to Download the Source
+--------------------------
+
+Use the git SCM software with the command:
+
+  git clone git://github.com/lvaruzza/bioscala.git
+  
+Git is available in most of the Linux distributions and in the site:
+
+http://git-scm.com/
+
 
 How to compile
 --------------
