@@ -10,8 +10,8 @@ fasta files and principaly some code to deal with the Velvet Graph File.
 Prerequisites
 -------------
 
-* Maven >= 2
-* scala >= 2.8
+1. Maven >= 2
+2. scala >= 2.8
 
 How to compile
 --------------
@@ -23,8 +23,6 @@ How to run the commands
 
 The commands are availiable as shell scripts in bin directory
 
-Example
+Example:
 
-./bin/dumpContigs velvet preprocessor/colorspace_input.csfasta contigs
-
-
+  ./bin/dumpContigs velvet preprocessor/colorspace_input.csfasta contigs
