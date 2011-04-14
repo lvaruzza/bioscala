@@ -1,13 +1,14 @@
-package bio.velvet
+package bio.cmdlets
 
 import java.io._
 import bio.Color
+import bio.velvet._
 
 /*
  * Heuristic for decoding contig from color space to base space
  * 
  */
-object DecodeContig {
+object DecodeContig extends Cmdlet {
 	var debug = false
 	
 	def maxIdx (cols:Array[Int]) = 
@@ -110,7 +111,7 @@ object DecodeContig {
 		decodeContig(c.colorSeq,c.displacement,c.strand,c.baseDensity,c.colorDensity)
 	}
 	
-	def main(args:Array[String]) {
+	def run(args:Array[String]) {
 		if (args.length > 0) {
 			val decoded = decodeContigFile(new File(args(0)))
 			println(decoded)

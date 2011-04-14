@@ -1,14 +1,15 @@
-package bio.velvet
+package bio.cmdlets
 
 import java.io._
 import bio.Color
 import bio.math.Binomial
+import bio.velvet._
 
 /*
  * Heuristic2 for decoding contig from color space to base space
  * 
  */
-object DecodeContigImpulse {
+object DecodeContigImpulse extends Cmdlet {
 	
 	var debug  = false
 	
@@ -115,7 +116,7 @@ object DecodeContigImpulse {
 		decodeContig(c.colorSeq,c.displacement,c.strand,c.baseDensity,c.colorDensity)
 	}
 	
-	def main(args:Array[String]) {
+	def run(args:Array[String]) {
 		if (args.length > 0) {
 			decodeContigFile(new File(args(0)))
 		} else {

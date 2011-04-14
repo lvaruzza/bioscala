@@ -57,18 +57,22 @@ class DumpContigs extends VelvetReader with Cmdlet {
     }
   }
 
+  def dumpContigs(velvetDir: String, csfastaFile: String, outputDir: String) {
+
+    val output = getOutput(outputDir);
+
+    val (header, things, contigsdb, seqdb, colordb) = readInputFiles(velvetDir, csfastaFile)
+
+    dumpContigs(things, seqdb, contigsdb, colordb, output)
+    
+    seqdb.close
+    contigsdb.close
+    colordb.close
+  }
+
   def run(args: Array[String]) {
     if (args.length >= 3) {
-      val outputDir = args(2)
-
-      val output = getOutput(outputDir);
-
-      val (header, things, contigsdb, seqdb, colordb) = readInputFiles(args(0), args(1))
-
-      dumpContigs(things, seqdb, contigsdb, colordb, output)
-      seqdb.close
-      contigsdb.close
-      colordb.close
+    	dumpContigs(args(0),args(1),args(2))
     } else {
       println("Missing args!!!")
       println("Use: dumpContigs velvetDir csfastaFile outputDir")

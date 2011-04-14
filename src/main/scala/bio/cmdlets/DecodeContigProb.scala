@@ -1,8 +1,9 @@
-package bio.velvet
+package bio.cmdlets
 
 import java.io._
 import bio.Color
 import bio.math.Binomial
+import bio.velvet._
 
 /*
  * Tentative probabilistic decoder
@@ -116,7 +117,7 @@ object DecodeContigProb {
 		decodeContig(c.colorSeq,c.displacement,c.strand,c.baseDensity,c.colorDensity)
 	}
 	
-	def main(args:Array[String]) {
+	def run(args:Array[String]) {
 		if (args.length > 0) {
 			decodeContigFile(new File(args(0)))
 		} else {
