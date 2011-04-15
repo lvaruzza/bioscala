@@ -1,15 +1,12 @@
 package bio.db
 
-import org.neo4j.kernel.impl.batchinsert.BatchInserter
-import org.neo4j.kernel.impl.batchinsert.BatchInserterImpl
-import org.neo4j.index.lucene.LuceneIndexBatchInserter
-import org.neo4j.index.lucene.LuceneIndexBatchInserterImpl
-import org.neo4j.kernel.EmbeddedGraphDatabase
-import org.neo4j.graphdb._
 import bio.velvet.ReadGraph
-import scala.io.Source
-import java.util.HashMap
+import org.neo4j.graphdb._
+import org.neo4j.kernel.impl.batchinsert.BatchInserterImpl
+import org.neo4j.kernel.EmbeddedGraphDatabase
 import scala.collection.JavaConversions._
+import scala.io.Source
+import org.neo4j.index.impl.lucene.LuceneBatchInserterIndexProvider
 
 /*
  * Graph Database
@@ -37,8 +34,11 @@ object GraphDB {
     val (header, things) = ReadGraph.readGraph(Source.fromFile(filename))
     val inserter = new BatchInserterImpl(dbfilename, BatchInserterImpl.loadProperties("neo4j.props"));
     // create the batch index service
-    val indexService = new LuceneIndexBatchInserterImpl(inserter);
+    val indexProvider = new LuceneBatchInserterIndexProvider( inserter );
 
+    val indexService = indexProvider.nodeIndex( "actors", Map( "type" -> "exact" ) );
+    indexService.setCacheCapacity( "id", 100000 );
+    
     println("Creating nodes")
     var nodeCount = 1
 
@@ -50,13 +50,13 @@ object GraphDB {
 
         val nodePos = inserter.createNode(Map("id" -> id,
         									  "end" -> vnode.endPos ))
-        indexService.index(nodePos, "id", id);
-
+        indexService.add(nodePos,Map("id" -> id))
+        
         val idNeg = new java.lang.Integer(-vnode.id)
         val nodeNeg = inserter.createNode(Map("id" -> idNeg,
         									  "end" -> vnode.endNeg))
         									  
-        indexService.index(nodeNeg, "id", idNeg);
+        indexService.add(nodeNeg,Map("id" -> idNeg))
 
         if (nodeCount % 100 == 0) {
           print(".")
@@ -69,8 +69,8 @@ object GraphDB {
       }
     }
     println("\nOptimizing Index")
-    Console.out.flush
-    indexService.optimize()
+    Console.out.flush()
+    indexService.flush()
 
     println("Creating edges")
     Console.out.flush
@@ -87,19 +87,19 @@ object GraphDB {
         if (arc.startNode != arc.endNode) {
           val id1 = new java.lang.Integer(arc.startNode)
           val id2 = new java.lang.Integer(arc.endNode)
-          val node1 = indexService.getNodes("id", id1).iterator.next.asInstanceOf[scala.Long]
-          val node2 = indexService.getNodes("id", id2).iterator.next.asInstanceOf[scala.Long]
+          val node1 = indexService.get("id", id1).iterator.next.asInstanceOf[scala.Long]
+          val node2 = indexService.get("id", id2).iterator.next.asInstanceOf[scala.Long]
           inserter.createRelationship(node1, node2, arcRel, null);
  
           val id3 = new java.lang.Integer(-arc.startNode)
           val id4 = new java.lang.Integer(-arc.endNode)
-          val node3 = indexService.getNodes("id", id3).iterator.next.asInstanceOf[scala.Long]
-          val node4 = indexService.getNodes("id", id4).iterator.next.asInstanceOf[scala.Long]
+          val node3 = indexService.get("id", id3).iterator.next.asInstanceOf[scala.Long]
+          val node4 = indexService.get("id", id4).iterator.next.asInstanceOf[scala.Long]
           inserter.createRelationship(node3, node4, arcRel, null);
           
         } else {
         	val id = new java.lang.Integer(arc.startNode)
-        	val node = indexService.getNodes("id", id).iterator.next.asInstanceOf[scala.Long]
+        	val node = indexService.get("id", id).iterator.next.asInstanceOf[scala.Long]
 
         	val mirrorNode = inserter.createNode(Map("mirror" -> new java.lang.Boolean(true)))
 
@@ -119,7 +119,7 @@ object GraphDB {
 
     println("\nDatabase Shutdown")
     inserter.shutdown()
-    indexService.shutdown()
+    indexProvider.shutdown()
   }
 
 }
