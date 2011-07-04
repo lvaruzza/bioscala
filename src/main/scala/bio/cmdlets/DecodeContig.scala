@@ -32,7 +32,7 @@ object DecodeContig extends Cmdlet {
 		if (strand == '+')
 			str
 		else {
-			str.reverse.map(Color.revcomp)
+			str.reverse.map(Color.revcompBase)
 		}
 	}
 	

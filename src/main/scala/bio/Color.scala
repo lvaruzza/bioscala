@@ -7,7 +7,8 @@ import scala.collection.immutable.Map
  */
     
 object Color {
-	val de2c = Map('A'->'0',
+	val de2c = Map(
+           'A'->'0',
 				   'C'->'1',
 				   'G'->'2',
 				   'T'->'3',
@@ -40,8 +41,24 @@ object Color {
 				   	    '.'->4)
 				   	    
 	val num2color = Array('0','1','2','3','.')
-	
-	val c2de =de2c.map(x => (x._2,x._1))
+
+  val identityBases = Map(
+    'A' -> 'A',
+    'C' -> 'C',
+    'G' -> 'G',
+    'T' -> 'T',
+    'a' -> 'A',
+    'c' -> 'C',
+    'g' -> 'G',
+    't' -> 'T')
+
+	val c2de =Map(
+    '0' -> 'A',
+    '1' -> 'C',
+    '2' -> 'G',
+    '3' -> 'T',
+    '4' -> 'N'
+  ) ++ identityBases
 
 	
 	val c2b = Map('A' -> Map('0'->'A',
@@ -75,10 +92,6 @@ object Color {
 							 '4'->'N',
 							 '.'->'N'))
 
-	def decodeFirst(color:String) = {
-		c2b(color(0))(color(1)) + color.drop(2) 
-	}
-	
 	def revcompV=Array('\0','\1','\2','\3','\4','\5','\6','\7','\10','\11','\12','\13','\14','\15',
 			'\16','\17','\20','\21','\22','\23','\24','\25','\26','\27','\30','\31','\32','\33','\34',
 			'\35','\36','\37',
@@ -103,9 +116,24 @@ object Color {
 			'\367','\370','\371','\372','\373','\374','\375','\376')
 				
 			
-    def revcomp(x:Char) = revcompV(x)
+    def revcompBase(x:Char) = revcompV(x)
     
 	def de2color(de:String):String = {
 		de.map(c => de2c(c))
 	}
+
+  def color2de(color:String):String = {
+    color.map(c => c2de(c))
+  }
+
+  def decodeFirst(color:String) = {
+		c2b(color(0))(color(1)) + color.drop(2)
+	}
+
+  def decodeColor(color:String) = {
+    val sb = new StringBuilder (color.length-1)
+    sb.append(c2b(color(0))(color(1)))
+    color.drop(2).foldLeft(sb)((sb,c) => sb += c2b(sb.last)(c))
+    sb.toString
+  }
 }

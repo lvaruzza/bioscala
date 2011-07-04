@@ -25,7 +25,7 @@ class MyDb4oQueryExecutionListener extends Db4oQueryExecutionListener() {
 class SeqDB(db:ObjectContainer) {
 	
 	def importFastaInt(in:Source,f:(IndexedBioSeq => Int)):SeqDB = {
-		val seqs = Fasta.readIndexed(in);
+		val seqs = Fasta.indexedReader.read(in);
 		var i = 1;
 		for(seq <-seqs ) {
 			db store (new IntIndexedBioSeq(seq,f(seq)))
@@ -43,7 +43,7 @@ class SeqDB(db:ObjectContainer) {
 	}
 
 	def importFastaStr(in:Source,f:(IndexedBioSeq => String)) = {
-		val seqs = Fasta.readIndexed(in);
+		val seqs = Fasta.indexedReader.read(in);
 		var i = 1;
 		for(seq <-seqs ) {
 			db store (new StringIndexedBioSeq(seq,f(seq)))
@@ -61,16 +61,20 @@ class SeqDB(db:ObjectContainer) {
 	}
 	
 	
-	def listFasta() {
-		val q = db.query();
-		q.constrain(classOf[BioSeq]);
-		
-		val res = q.execute;
+	def printFasta() {
+		val res = list();
 		while(res.hasNext) {
 			println("R: " + res.next)
 		}
 	}
 
+	def list():Iterator[BioSeq] = {
+		val q = db.query();
+		q.constrain(classOf[BioSeq]);
+		
+		q.execute.asInstanceOf[Iterator[BioSeq]]
+	}
+	
 	def find(idx:Int):Option[IntIndexedBioSeq] = {
 		val q = db.query
 		q.constrain(classOf[IntIndexedBioSeq])
